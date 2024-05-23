@@ -1,6 +1,8 @@
 from enum import Enum
 import math
 
+TEMPLATE_FILE_PATH = "Template/Template.step"
+
 BAND_COLOURS = [
     "Black",
     "Brown",
@@ -15,6 +17,21 @@ BAND_COLOURS = [
     "Gold",
     "Silver",
 ]
+# COLOUR_RGB("", 0.972549019607843, 0.529411764705882, 0.0)
+RGB_VALUES = {
+    "Black": (0, 0, 0),
+    "Brown": (0.6, 0.3, 0.1),
+    "Red": (1, 0, 0),
+    "Orange": (1, 0.5, 0),
+    "Yellow": (1, 1, 0),
+    "Green": (0, 1, 0),
+    "Blue": (0, 0, 1),
+    "Violet": (0.5, 0, 0.5),
+    "Grey": (0.5, 0.5, 0.5),
+    "White": (1, 1, 1),
+    "Gold": (1, 0.84, 0),
+    "Silver": (0.75, 0.75, 0.75),
+}
 
 
 def read_file_to_string(file_path: str) -> str:
@@ -47,9 +64,7 @@ def save_string_to_file(content: str, output_file_path: str) -> None:
 def set_band_value(
     step_string: str,
     band_number: int,
-    red_value: float,
-    green_value: float,
-    blue_value: float,
+    colours: tuple,
 ) -> str:
     """Sets the band values in a STEP file string, replacing placeholders with
     the actual values, and returns the updated string.
@@ -73,9 +88,9 @@ def set_band_value(
     blue_placeholder = "{{BAND_" + str(band_number) + "_BLUE}}"
 
     # Replace the placeholders with the actual values.
-    step_string = step_string.replace(red_placeholder, str(red_value))
-    step_string = step_string.replace(green_placeholder, str(green_value))
-    step_string = step_string.replace(blue_placeholder, str(blue_value))
+    step_string = step_string.replace(red_placeholder, str(colours[0]))
+    step_string = step_string.replace(green_placeholder, str(colours[1]))
+    step_string = step_string.replace(blue_placeholder, str(colours[2]))
 
     # Return the updated string.
     return step_string
@@ -212,29 +227,50 @@ def value_to_first_four_of_five_bands(value: float) -> tuple:
     return (first_colour, second_colour, third_colour, multiplier_colour)
 
 
+def create_resistor_step(
+    first_band_colour: str,
+    second_band_colour: str,
+    third_band_colour: str,
+    fourth_band_colour: str,
+    fifth_band_colour: str,
+) -> str:
+    """Generates the contents of a step file of a 5 band resistor, from 5
+    provided colours.
+
+    Args:
+        first_band_colour (str): The colour of the fist band.
+        second_band_colour (str): The colour of the second band.
+        third_band_colour (str): The colour of the third band.
+        fourth_band_colour (str): The colour of the forth band.
+        fifth_band_colour (str): The colour of the fifth band.
+
+    Returns:
+        str: The contents of a step file for a 5 band resistor.
+    """
+
+    # Reads in the contents of the template file.
+    step_string = read_file_to_string(TEMPLATE_FILE_PATH)
+
+    # Replaces the colour placeholders with the given colours.
+    step_string = set_band_value(step_string, 1, RGB_VALUES[first_band_colour])
+    step_string = set_band_value(step_string, 2, RGB_VALUES[second_band_colour])
+    step_string = set_band_value(step_string, 3, RGB_VALUES[third_band_colour])
+    step_string = set_band_value(step_string, 4, RGB_VALUES[fourth_band_colour])
+    step_string = set_band_value(step_string, 5, RGB_VALUES[fifth_band_colour])
+
+    # Return the contents of the step file
+    return step_string
+
+
 def main():
 
-    #     template_file_path = "Template/Template.step"
-    #     output_file_path = "Output/test.step"
-    #
-    #     file_content = read_file_to_string(template_file_path)
-    #
-    #     file_content = set_band_value(file_content, 1, 1, 1, 1)
-    #     file_content = set_band_value(file_content, 2, 0.8, 0.8, 0.8)
-    #     file_content = set_band_value(file_content, 3, 0.6, 0.6, 0.6)
-    #     file_content = set_band_value(file_content, 4, 0.4, 0.4, 0.4)
-    #     file_content = set_band_value(file_content, 5, 0.2, 0.2, 0.2)
-    #
-    #     save_string_to_file(file_content, output_file_path)
+    output_file_path = "Output/test.step"
 
-    e24_values = generate_e24_values()
+    file_content = create_resistor_step(
+        "Red", "Green", "Blue", "Violet", "Gold"
+    )
 
-    for value in e24_values:
-        name = to_engineering_notation(value)
-
-        colours = value_to_first_four_of_five_bands(value)
-
-        print(f"{name}: {colours}")
+    save_string_to_file(file_content, output_file_path)
 
 
 if __name__ == "__main__":
