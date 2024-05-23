@@ -113,6 +113,44 @@ def generate_e24_values() -> list:
     return e24_values
 
 
+def to_engineering_notation(value: float) -> str:
+    """Converts a value to engineering notation with SI prefix.
+
+    Args:
+        value (float): The value to convert.
+
+    Returns:
+        str: The value represented by engineering notation as a string.
+    """
+
+    # If the value is less than 1000, use the value as is.
+    if value < 1e3:
+        si_prefix = "R"
+        digits = value
+
+    # If the value is less than 1000000, use K as SI prefix.
+    elif value < 1e6:
+        si_prefix = "K"
+        digits = value / 1e3
+
+    # If the value is greater than or equal to 1000000, use M as SI prefix.
+    else:
+        si_prefix = "M"
+        digits = value / 1e6
+
+    # Format the digits as a string without trailing zeros.
+    digits = "{:g}".format(float(digits))
+
+    # If the value contains a decimal point, replace it with the SI prefix.
+    if "." in digits:
+        engineering_notation = digits.replace(".", si_prefix)
+    # If the value is an integer, append the SI prefix.
+    else:
+        engineering_notation = digits + si_prefix
+
+    return engineering_notation
+
+
 def main():
 
     #     template_file_path = "Template/Template.step"
@@ -131,7 +169,7 @@ def main():
     e24_values = generate_e24_values()
 
     for value in e24_values:
-        print(value)
+        print(to_engineering_notation(value))
 
 
 if __name__ == "__main__":
