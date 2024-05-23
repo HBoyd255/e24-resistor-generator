@@ -2,6 +2,7 @@ from enum import Enum
 import math
 
 TEMPLATE_FILE_PATH = "Template/Template.step"
+OUTPUT_DIRECTORY = "Output/"
 
 BAND_COLOURS = [
     "Black",
@@ -17,7 +18,27 @@ BAND_COLOURS = [
     "Gold",
     "Silver",
 ]
-# COLOUR_RGB("", 0.972549019607843, 0.529411764705882, 0.0)
+
+TOLERANCE_COLOURS = {
+    1: "Brown",
+    2: "Red",
+    0.5: "Green",
+    0.25: "Blue",
+    0.1: "Violet",
+    5: "Gold",
+    10: "Silver",
+}
+
+TOLERANCE_NAMES = {
+    1: "OnePercentTolerance",
+    2: "TwoPercentTolerance",
+    0.5: "HalfPercentTolerance",
+    0.25: "QuarterPercentTolerance",
+    0.1: "TenthPercentTolerance",
+    5: "FivePercentTolerance",
+    10: "TenPercentTolerance",
+}
+
 RGB_VALUES = {
     "Black": (0, 0, 0),
     "Brown": (0.6, 0.3, 0.1),
@@ -262,15 +283,42 @@ def create_resistor_step(
     return step_string
 
 
-def main():
+def create_step_file_from_value(value: int, tolerance: float) -> None:
+    """Generates and saves a STEP file for a resistor with a given value and
+    tolerance.
 
-    output_file_path = "Output/test.step"
+    Args:
+        value (int): The value of the resistor.
+        tolerance (float): The tolerance of the resistor.
+    """
 
-    file_content = create_resistor_step(
-        "Red", "Green", "Blue", "Violet", "Gold"
+    # Get the colour of the 5th band based on the tolerance.
+    tolerance_colour = TOLERANCE_COLOURS[tolerance]
+
+    # Get the name of the tolerance.
+    tolerance_name = TOLERANCE_NAMES[tolerance]
+
+    # Generate the contents of the step file.
+    step_file_contents = create_resistor_step(
+        *value_to_first_four_of_five_bands(value), tolerance_colour
     )
 
-    save_string_to_file(file_content, output_file_path)
+    # Convert the value to engineering notation.
+    resistor_name = to_engineering_notation(value)
+
+    # Create the file name.
+    file_name = "Resistor_" + resistor_name + "_" + tolerance_name + ".step"
+
+    # Create the file path.
+    file_path = OUTPUT_DIRECTORY + file_name
+
+    # Save the contents to a file.
+    save_string_to_file(step_file_contents, file_path)
+
+
+def main():
+
+    create_step_file_from_value(100, 2)
 
 
 if __name__ == "__main__":
