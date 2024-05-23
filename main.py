@@ -1,3 +1,22 @@
+from enum import Enum
+import math
+
+BAND_COLOURS = [
+    "Black",
+    "Brown",
+    "Red",
+    "Orange",
+    "Yellow",
+    "Green",
+    "Blue",
+    "Violet",
+    "Grey",
+    "White",
+    "Gold",
+    "Silver",
+]
+
+
 def read_file_to_string(file_path: str) -> str:
     """Reads the content of a file and returns it as a string.
 
@@ -151,6 +170,48 @@ def to_engineering_notation(value: float) -> str:
     return engineering_notation
 
 
+def value_to_first_four_of_five_bands(value: float) -> tuple:
+    """Converts a value to a tuple of band colours.
+
+    Args:
+        value (float): The value to convert.
+
+    Returns:
+        tuple: The band colours of the first 4 bands in a 5 band resistor, as a
+        tuple of strings.
+    """
+
+    # Calculate the multiplier exponent for the value, which is the power of 10
+    # to multiply the first 3 digits of the value by, to get the actual value.
+    multiplier_exponent = math.floor(math.log10(value) - 2)
+
+    # Tale the first 3 digits of the value.
+    three_digit_value = "{:g}".format(float(value / 10**multiplier_exponent))
+
+    # Separate the first 3 digits into individual digits.
+    first_digit = int(three_digit_value[0])
+    second_digit = int(three_digit_value[1])
+    third_digit = int(three_digit_value[2])
+
+    # Get the band colours for the first 3 digits.
+    first_colour = BAND_COLOURS[first_digit]
+    second_colour = BAND_COLOURS[second_digit]
+    third_colour = BAND_COLOURS[third_digit]
+
+    # If the multiplier is 0.01, use silver.
+    if multiplier_exponent == -2:
+        multiplier_colour = BAND_COLOURS[11]  # Silver
+    # If the multiplier is 0.1, use gold.
+    elif multiplier_exponent == -1:
+        multiplier_colour = BAND_COLOURS[10]  # Gold
+    # Otherwise, get the band colour for the multiplier exponent.
+    else:
+        multiplier_colour = BAND_COLOURS[multiplier_exponent]
+
+    # Return the first 4 band colours as a tuple.
+    return (first_colour, second_colour, third_colour, multiplier_colour)
+
+
 def main():
 
     #     template_file_path = "Template/Template.step"
@@ -169,7 +230,11 @@ def main():
     e24_values = generate_e24_values()
 
     for value in e24_values:
-        print(to_engineering_notation(value))
+        name = to_engineering_notation(value)
+
+        colours = value_to_first_four_of_five_bands(value)
+
+        print(f"{name}: {colours}")
 
 
 if __name__ == "__main__":
