@@ -62,20 +62,62 @@ def set_band_value(
     return step_string
 
 
+BASE_VALUES = [
+    10,
+    11,
+    12,
+    13,
+    15,
+    16,
+    18,
+    20,
+    22,
+    24,
+    27,
+    30,
+    33,
+    36,
+    39,
+    43,
+    47,
+    51,
+    56,
+    62,
+    68,
+    75,
+    82,
+    91,
+]
+MULTIPLIERS = [10**i for i in range(-1, 6)]  # 10^-1 to 10^6
+
+# Generate a list of all E24 values from 1 to 9M1.
+e24_values = [
+    round(base * multiplier, 2)
+    for multiplier in MULTIPLIERS
+    for base in BASE_VALUES
+]
+
+# Add 10M as a valid value.
+e24_values.append(10**7)
+
+
 def main():
 
-    template_file_path = "Template/Template.step"
-    output_file_path = "Output/test.step"
+    #     template_file_path = "Template/Template.step"
+    #     output_file_path = "Output/test.step"
+    #
+    #     file_content = read_file_to_string(template_file_path)
+    #
+    #     file_content = set_band_value(file_content, 1, 1, 1, 1)
+    #     file_content = set_band_value(file_content, 2, 0.8, 0.8, 0.8)
+    #     file_content = set_band_value(file_content, 3, 0.6, 0.6, 0.6)
+    #     file_content = set_band_value(file_content, 4, 0.4, 0.4, 0.4)
+    #     file_content = set_band_value(file_content, 5, 0.2, 0.2, 0.2)
+    #
+    #     save_string_to_file(file_content, output_file_path)
 
-    file_content = read_file_to_string(template_file_path)
-
-    file_content = set_band_value(file_content, 1, 1, 1, 1)
-    file_content = set_band_value(file_content, 2, 0.8, 0.8, 0.8)
-    file_content = set_band_value(file_content, 3, 0.6, 0.6, 0.6)
-    file_content = set_band_value(file_content, 4, 0.4, 0.4, 0.4)
-    file_content = set_band_value(file_content, 5, 0.2, 0.2, 0.2)
-
-    save_string_to_file(file_content, output_file_path)
+    for value in e24_values:
+        print(value)
 
 
 if __name__ == "__main__":
