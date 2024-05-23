@@ -62,43 +62,55 @@ def set_band_value(
     return step_string
 
 
-BASE_VALUES = [
-    10,
-    11,
-    12,
-    13,
-    15,
-    16,
-    18,
-    20,
-    22,
-    24,
-    27,
-    30,
-    33,
-    36,
-    39,
-    43,
-    47,
-    51,
-    56,
-    62,
-    68,
-    75,
-    82,
-    91,
-]
-MULTIPLIERS = [10**i for i in range(-1, 6)]  # 10^-1 to 10^6
+def generate_e24_values() -> list:
+    """Generates a list of all 169 E24 values from 1 to 10M.
 
-# Generate a list of all E24 values from 1 to 9M1.
-e24_values = [
-    round(base * multiplier, 2)
-    for multiplier in MULTIPLIERS
-    for base in BASE_VALUES
-]
+    Returns:
+        list: A list of all 169 E24 values from 1 to 10M.
+    """
 
-# Add 10M as a valid value.
-e24_values.append(10**7)
+    # List of base values for E24 series.
+    bases = [
+        10,
+        11,
+        12,
+        13,
+        15,
+        16,
+        18,
+        20,
+        22,
+        24,
+        27,
+        30,
+        33,
+        36,
+        39,
+        43,
+        47,
+        51,
+        56,
+        62,
+        68,
+        75,
+        82,
+        91,
+    ]
+
+    # List of multipliers from 10^-1 to 10^6.
+    multipliers = [10**i for i in range(-1, 6)]
+
+    # Generate a list of all E24 values from 1 to 9M1.
+    e24_values = [
+        round(base * multiplier, 2)
+        for multiplier in multipliers
+        for base in bases
+    ]
+
+    # Add 10M as a valid value.
+    e24_values.append(10**7)
+
+    return e24_values
 
 
 def main():
@@ -115,6 +127,8 @@ def main():
     #     file_content = set_band_value(file_content, 5, 0.2, 0.2, 0.2)
     #
     #     save_string_to_file(file_content, output_file_path)
+
+    e24_values = generate_e24_values()
 
     for value in e24_values:
         print(value)
