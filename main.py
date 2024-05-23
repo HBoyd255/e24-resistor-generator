@@ -310,7 +310,7 @@ def create_step_file_from_value(value: int, tolerance: float) -> None:
     file_name = "Resistor_" + resistor_name + "_" + tolerance_name + ".step"
 
     # Create the file path.
-    file_path = OUTPUT_DIRECTORY + file_name
+    file_path = OUTPUT_DIRECTORY + tolerance_name + "/" + file_name
 
     # Save the contents to a file.
     save_string_to_file(step_file_contents, file_path)
@@ -318,7 +318,9 @@ def create_step_file_from_value(value: int, tolerance: float) -> None:
 
 def main():
 
-    create_step_file_from_value(100, 2)
+    for value in generate_e24_values():
+        for tolerance in TOLERANCE_COLOURS:
+            create_step_file_from_value(value, tolerance)
 
 
 if __name__ == "__main__":
