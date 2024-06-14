@@ -1,5 +1,5 @@
-from enum import Enum
 import math
+import os
 
 TEMPLATE_FILE_PATH = "Template/Template.step"
 OUTPUT_DIRECTORY = "Output/"
@@ -78,6 +78,9 @@ def save_string_to_file(content: str, output_file_path: str) -> None:
         output_file_path (str): The path to the file to save the content to.
     """
 
+    # Create the directory if it doesn't exist
+    os.makedirs(os.path.dirname(output_file_path), exist_ok=True)
+
     with open(output_file_path, "w") as file:
         file.write(content)
 
@@ -85,7 +88,7 @@ def save_string_to_file(content: str, output_file_path: str) -> None:
 def set_band_value(
     step_string: str,
     band_number: int,
-    colours: tuple,
+    colours: tuple[int, int, int],
 ) -> str:
     """Sets the band values in a STEP file string, replacing placeholders with
     the actual values, and returns the updated string.
@@ -206,7 +209,9 @@ def to_engineering_notation(value: float) -> str:
     return engineering_notation
 
 
-def value_to_first_four_of_five_bands(value: float) -> tuple:
+def value_to_first_four_of_five_bands(
+    value: float,
+) -> tuple[str, str, str, str]:
     """Converts a value to a tuple of band colours.
 
     Args:
